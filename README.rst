@@ -126,3 +126,21 @@ And here's how to do it from the command line:
 .. code-block:: bash
 
    $ savepagenow http://www.example.com/ --user-agent "my user agent here"
+
+Skip guessing the decoding
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+If you just need the URL and want to skip chardet doing the decoding of the archived page, you can force utf-8 encoding.
+
+Here's how to do it in Python:
+
+.. code-block:: python
+
+   >>> savepagenow.capture("http://www.example.com/", force_utf8=True)
+
+
+And here's how to do it from the command line:
+
+.. code-block:: bash
+
+   $ savepagenow http://www.example.com/ --force-utf8 
+

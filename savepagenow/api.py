@@ -8,7 +8,8 @@ from six.moves.urllib.parse import urljoin
 def capture(
     target_url,
     user_agent="savepagenow (https://github.com/pastpages/savepagenow)",
-    accept_cache=False
+    accept_cache=False,
+    force_utf8=False
 ):
     """
     Archives the provided URL using archive.org's Wayback Machine.
@@ -31,6 +32,9 @@ def capture(
         'User-Agent': user_agent,
     }
     response = requests.get(request_url, headers=headers)
+
+    if force_utf8:
+        response.encoding = "utf-8"
 
     # If it has an error header, raise that.
     has_error_header = 'X-Archive-Wayback-Runtime-Error' in response.headers
@@ -67,7 +71,8 @@ def capture(
 
 def capture_or_cache(
     target_url,
-    user_agent="savepagenow (https://github.com/pastpages/savepagenow)"
+    user_agent="savepagenow (https://github.com/pastpages/savepagenow)",
+    force_utf8=False
 ):
     """
     Archives the provided URL using archive.org's Wayback Machine, unless
@@ -81,9 +86,9 @@ def capture_or_cache(
     in the previous minutes.
     """
     try:
-        return capture(target_url, user_agent=user_agent, accept_cache=False), True
+        return capture(target_url, user_agent=user_agent, accept_cache=False, force_utf8=force_utf8), True
     except CachedPage:
-        return capture(target_url, user_agent=user_agent, accept_cache=True), False
+        return capture(target_url, user_agent=user_agent, accept_cache=True,  force_utf8=force_utf8), False
 
 
 class CachedPage(Exception):
@@ -112,6 +117,7 @@ class BlockedByRobots(WaybackRuntimeError):
 @click.argument("url")
 @click.option("-ua", "--user-agent", help="User-Agent header for the web request")
 @click.option("-c", "--accept-cache", help="Accept and return cached URL", is_flag=True)
+@click.option("-u", "--force-utf8", help="Forces UTF-8, for large archival projects", is_flag=True)
 def cli(url, user_agent, accept_cache):
     """
     Archives the provided URL using archive.org's Wayback Machine.

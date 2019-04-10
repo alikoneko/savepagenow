@@ -34,7 +34,7 @@ def capture(
     response = requests.get(request_url, headers=headers)
 
     if force_utf8:
-        response.encoding = "utf-8"
+        response.encoding = response.apparent_encoding
 
     # If it has an error header, raise that.
     has_error_header = 'X-Archive-Wayback-Runtime-Error' in response.headers
